@@ -1,5 +1,6 @@
 name: Ejemplo
 on: push
+
 jobs:
   security:
     runs-on: ubuntu-latest
