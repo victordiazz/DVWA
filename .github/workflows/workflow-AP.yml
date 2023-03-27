@@ -1,12 +1,30 @@
-name: Ejemplo
-on: push
+name: Snyk PHP Security Check
+
+on:
+  push:
+    branches:
+      - main
 
 jobs:
-  security:
+  snyk-security-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/php@master
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Compiltation
+        run: compose 
+      - name: Use PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, zip
+      - name: Install Snyk
+        run: curl https://snyk.io/partners/api/v1/integrations/github/install | bash
+      - name: Authenticate Snyk
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk auth $SNYK_TOKEN
+      - name: Run Snyk Security Check
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk test
